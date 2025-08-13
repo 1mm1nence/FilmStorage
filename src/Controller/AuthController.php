@@ -13,17 +13,45 @@ class AuthController {
             $password = $_POST['password'] ?? '';
 
             if ($authService->login($username, $password)) {
-                View::render('login_success.php', [
+                View::render('auth/login_success.php', [
                     'username' => $_SESSION['username'] ?? ''
                 ]);
             } else {
-                View::render('login_form.php', [
+                View::render('auth/login_form.php', [
                     'error' => 'Invalid credentials',
                 ]);
             }
         } else {
-            View::render('login_form.php');
+            View::render('auth/login_form.php');
         }
+    }
+
+//    public function logout(): void
+//    {
+//        session_start();
+//        session_unset();
+//        session_destroy();
+//        header("Location: /login");
+//        exit;
+//    }
+
+    public function logout(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            http_response_code(403);
+            echo "Forbidden: Invalid CSRF token";
+            exit;
+        }
+
+        session_unset();
+        session_destroy();
+
+        header("Location: /login");
+        exit;
     }
 
     public function register(): void {
@@ -34,7 +62,7 @@ class AuthController {
             $password = $_POST['password'] ?? '';
 
             if ($username === '' || $password === '') {
-                View::render('register_form.php', [
+                View::render('auth/register_form.php', [
                     'error' => 'Username and password are required.',
                 ]);
                 return;
@@ -42,16 +70,16 @@ class AuthController {
 
             $success = $authService->register($username, $password);
             if ($success) {
-                View::render('register_success.php', [
+                View::render('auth/register_success.php', [
                     'username' => $_SESSION['username'] ?? '',
                 ]);
             } else {
-                View::render('register_form.php', [
+                View::render('auth/register_form.php', [
                     'error' => 'Username already taken.',
                 ]);
             }
         } else {
-            View::render('register_form.php');
+            View::render('auth/register_form.php');
         }
     }
 }

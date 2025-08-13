@@ -2,22 +2,30 @@
 
 namespace App\Core;
 
+use App\Service\AuthService;
+use PDO;
+
 class Router {
     private array $routes = [];
+    private PDO $pdo;
 
-    public function __construct() {
+    public function __construct(PDO $pdo) {
+        $this->pdo = $pdo;
+
         $this->registerRoutes();
     }
 
     private function registerRoutes(): void {
         $this->routes = [
             'GET' => [
+                '/' => [\App\Controller\FilmController::class, 'index'],
                 '/login' => [\App\Controller\AuthController::class, 'login'],
                 '/register' => [\App\Controller\AuthController::class, 'register'],
                 '/films' => [\App\Controller\FilmController::class, 'index'],
             ],
             'POST' => [
                 '/login' => [\App\Controller\AuthController::class, 'login'],
+                '/logout' => [\App\Controller\AuthController::class, 'logout'],
                 '/register' => [\App\Controller\AuthController::class, 'register'],
             ]
         ];
@@ -30,8 +38,9 @@ class Router {
         $handler = $this->routes[$method][$path] ?? null;
 
         if ($handler) {
-            [$controller, $action] = $handler;
-            (new $controller())->$action();
+            [$controllerClass, $action] = $handler;
+            $controller = new $controllerClass($this->pdo);
+            $controller->$action();
         } else {
             http_response_code(404);
             echo "404 Not Found";

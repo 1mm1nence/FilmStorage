@@ -6,7 +6,7 @@ class View {
     public static function render(string $templateFile, array $data = []): void
     {
         $config = require __DIR__ . '/../../config/config.php';
-        $templatePath = $config['view_path'] . $templateFile;
+        $templatePath = $config['templates_path'] . $templateFile;
 
         if (!file_exists($templatePath)) {
             http_response_code(500);
@@ -14,7 +14,12 @@ class View {
             return;
         }
 
-        extract($data); // allows using $error, $username, etc.
+        extract($data);
+
+        ob_start();
         require $templatePath;
+        $content = ob_get_clean();
+
+        require $config['templates_path'] . 'base.php';
     }
 }

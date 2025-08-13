@@ -4,17 +4,42 @@ namespace App\Entity;
 
 class User
 {
-    public int $id;
-    public string $username;
-    public string $password; // hashed password
-    public string $email;
-    public string $created_at;
+    private ?int $id;
+    private string $username;
+    private ?string $password;
 
-    public function __construct(string $username, string $password, string $email)
+    public function __construct(?int $id, string $username)
+    {
+        $this->id = $id;
+        $this->setUsername($username);
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): self
     {
         $this->username = $username;
+
+        return $this;
+    }
+
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
         $this->password = password_hash($password, PASSWORD_DEFAULT);
-        $this->email = $email;
-        $this->created_at = date('Y-m-d H:i:s');
+
+        return $this;
     }
 }

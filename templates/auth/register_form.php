@@ -1,7 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head><title>Register</title></head>
-<body>
+
 <h1>User Registration</h1>
 
 <?php if (!empty($error)): ?>
@@ -14,5 +11,3 @@
     <button type="submit">Register</button>
 </form>
 <p><a href="/login">Already have an account?</a></p>
-</body>
-</html>

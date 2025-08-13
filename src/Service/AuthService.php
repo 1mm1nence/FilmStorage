@@ -2,13 +2,33 @@
 
 namespace App\Service;
 
+use App\Entity\User;
 use App\Repository\UserRepository;
+use PDO;
 
 class AuthService {
     private UserRepository $userRepo;
+    private PDO $pdo;
+    private ?User $currentUser = null;
 
-    public function __construct() {
-        $this->userRepo = new UserRepository();
+    public function __construct(PDO $pdo) {
+        $this->pdo = $pdo;
+        $this->userRepo = new UserRepository($pdo);
+    }
+
+    public function getCurrentUser(): ?User
+    {
+        if ($this->currentUser !== null) {
+            return $this->currentUser;
+        }
+
+        if (empty($_SESSION['user_id'])) {
+            return null;
+        }
+
+        $this->currentUser = $this->userRepo->findById($_SESSION['user_id']);
+
+        return $this->currentUser;
     }
 
     public function login(string $username, string $password): bool {
