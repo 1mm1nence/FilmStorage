@@ -1,7 +1,9 @@
 CREATE TABLE IF NOT EXISTS actors (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    surname VARCHAR(255) NOT NULL
+    surname VARCHAR(255) NOT NULL,
+    INDEX idx_name (name),
+    INDEX idx_surname (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS film_actor (

@@ -21,13 +21,28 @@ class Router {
                 '/' => [\App\Controller\FilmController::class, 'index'],
                 '/login' => [\App\Controller\AuthController::class, 'login'],
                 '/register' => [\App\Controller\AuthController::class, 'register'],
+
                 '/films' => [\App\Controller\FilmController::class, 'index'],
+                '/film/create' => [\App\Controller\FilmController::class, 'createForm'],
+                '/film/detail' => [\App\Controller\FilmController::class, 'show'],
+                '/film/edit' => [\App\Controller\FilmController::class, 'edit'],
+                '/film/delete' => [\App\Controller\FilmController::class, 'deleteFilm'],
+
+                '/search' => [\App\Controller\FilmController::class, 'searchFilm'],
+
             ],
             'POST' => [
                 '/login' => [\App\Controller\AuthController::class, 'login'],
                 '/logout' => [\App\Controller\AuthController::class, 'logout'],
                 '/register' => [\App\Controller\AuthController::class, 'register'],
-            ]
+
+                '/film/create' => [\App\Controller\FilmController::class, 'create'],
+                '/film/edit' => [\App\Controller\FilmController::class, 'edit'],
+                '/film/add-actor' => [\App\Controller\FilmController::class, 'addActor'],
+                '/film/remove-actor' => [\App\Controller\FilmController::class, 'removeActor'],
+
+                '/import' => [\App\Controller\FilmController::class, 'importFilms'],
+            ],
         ];
     }
 

@@ -10,12 +10,12 @@ class Film
     private string $name;
     private int $year;
     private FilmFormat $format;
-    private User $user;
+    private ?User $user;
     private array $actors;
 
-    public function __construct(?int $id, string $name, int $year, FilmFormat $format, User $user, array $actors = [])
+    public function __construct(?int $id, string $name, int $year, FilmFormat $format, ?User $user, array $actors = [])
     {
-        $this->id = $id;
+        $this->setId($id);
         $this->setName($name);
         $this->setYear($year);
         $this->setFormat($format);
@@ -26,6 +26,13 @@ class Film
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(?int $id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getName(): string
@@ -57,6 +64,12 @@ class Film
         return $this->format;
     }
 
+    public function getFormatName(): string
+    {
+        return $this->format->label();
+    }
+
+
     public function setFormat(FilmFormat $format): self
     {
         $this->format = $format;
@@ -64,12 +77,12 @@ class Film
         return $this;
     }
 
-    public function getUser(): User
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUser(User $user): self
+    public function setUser(?User $user): self
     {
         $this->user = $user;
 

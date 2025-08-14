@@ -3,19 +3,25 @@ namespace App\Controller;
 
 use App\Service\AuthService;
 use App\Core\View;
+use PDO;
 
 class AuthController {
-    public function login(): void {
-        $authService = new AuthService();
+    private AuthService $authService;
 
+    public function __construct(PDO $pdo)
+    {
+        $this->authService = new AuthService($pdo);
+    }
+
+    public function login(): void
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = $_POST['username'] ?? '';
             $password = $_POST['password'] ?? '';
 
-            if ($authService->login($username, $password)) {
-                View::render('auth/login_success.php', [
-                    'username' => $_SESSION['username'] ?? ''
-                ]);
+            if ($this->authService->login($username, $password)) {
+                header('Location: /');
+                exit;
             } else {
                 View::render('auth/login_form.php', [
                     'error' => 'Invalid credentials',
@@ -25,15 +31,6 @@ class AuthController {
             View::render('auth/login_form.php');
         }
     }
-
-//    public function logout(): void
-//    {
-//        session_start();
-//        session_unset();
-//        session_destroy();
-//        header("Location: /login");
-//        exit;
-//    }
 
     public function logout(): void
     {
@@ -55,8 +52,6 @@ class AuthController {
     }
 
     public function register(): void {
-        $authService = new AuthService();
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = trim($_POST['username'] ?? '');
             $password = $_POST['password'] ?? '';
@@ -68,7 +63,7 @@ class AuthController {
                 return;
             }
 
-            $success = $authService->register($username, $password);
+            $success = $this->authService->register($username, $password);
             if ($success) {
                 View::render('auth/register_success.php', [
                     'username' => $_SESSION['username'] ?? '',

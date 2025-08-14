@@ -8,8 +8,9 @@ class Actor
     private string $name;
     private string $surname;
 
-    public function __construct(string $name, string $surname)
+    public function __construct(?int $id, string $name, string $surname)
     {
+        $this->setId($id);
         $this->setName($name);
         $this->setSurname($surname);
     }
@@ -17,6 +18,13 @@ class Actor
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(?int $id): self
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getName(): string
