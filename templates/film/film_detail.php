@@ -62,6 +62,21 @@ use App\Entity\Film;
     .detail-container a:hover {
         background-color: #ddd;
     }
+
+    .delete-link {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #eee;
+        text-decoration: none;
+        color: #cc0000 !important;;
+    }
+
+    .delete-link:hover {
+        background-color: #ffcccc !important;;
+    }
 </style>
 
 <div class="detail-container">
@@ -80,6 +95,9 @@ use App\Entity\Film;
     <?php endif; ?>
 
     <p>
-        <a href="/film/edit?id=<?= urlencode($film->getId()) ?>">Edit film info</a>
+        <a href="/film/edit?id=<?= urlencode($film->getId()) ?>">Edit actor list</a>
+    </p>
+    <p>
+        <a href="/film/delete?id=<?= $film->getId() ?>" class="delete-link" onclick="return confirm('Delete this film?')">Delete Film</a>
     </p>
 </div>

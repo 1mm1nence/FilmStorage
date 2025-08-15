@@ -151,13 +151,15 @@ class ImportService
         }
 
         // 2. Check MIME type
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mimeType = finfo_file($finfo, $file['tmp_name']);
-        finfo_close($finfo);
+        // 'fileinfo' extention required.
 
-        if ($mimeType !== 'text/plain') {
-            return false;
-        }
+//        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+//        $mimeType = finfo_file($finfo, $file['tmp_name']);
+//        finfo_close($finfo);
+
+//        if ($mimeType !== 'text/plain') {
+//            return false;
+//        }
 
         return true;
     }

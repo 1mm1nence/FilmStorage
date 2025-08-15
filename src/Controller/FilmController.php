@@ -95,7 +95,7 @@ class FilmController extends AuthenticatedController {
         if (!Validator::isYearValid($filmYear)) {
             Router::redirectTo(
                 '/film/create',
-                'The film was not created. The year should be more than 1800 or less than current year + 20.',
+                'The film was not created. The year should be more than 1901 or less than current year + 20.',
                 'error'
             );
         }
@@ -154,10 +154,10 @@ class FilmController extends AuthenticatedController {
             );
         }
 
-        if (!Validator::isStringAllowedCharsOnly($actorName) || !Validator::isStringAllowedCharsOnly($actorSurname)) {
+        if (!Validator::isStringAllowedCharsForNameOnly($actorName) || !Validator::isStringAllowedCharsForNameOnly($actorSurname)) {
             Router::redirectTo(
                 '/film/edit?id=' . $filmId,
-                'The name and surname should not contain any characters other then letters.',
+                'The name and surname should contain only letters, spaces, apostrophes or hyphens.',
                 'error'
             );
         }

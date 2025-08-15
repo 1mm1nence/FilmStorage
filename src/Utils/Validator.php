@@ -10,14 +10,20 @@ class Validator
         return $length >= $minLength && $length <= $maxLength;
     }
 
-    public static function isYearValid(int $year, int $min = 1800, ?int $max = null): bool
+    public static function isYearValid(int $year, int $min = 1901, ?int $max = null): bool
     {
         $max = $max ?? ((int) date('Y')) + 20; // +20 for counting cases, when the user wants to enter info about film that will be released in the future.
-        return $year >= $min && $year <= $max;
+
+        return $year >= $min && $year <= $max && $year <= 2155;
     }
 
     public static function isStringAllowedCharsOnly(string $value): bool
     {
-        return preg_match('/^[a-zA-Z0-9 ]+$/u', $value) === 1;
+        return preg_match("/^[a-zA-Z0-9 \'-]+$/u", $value) === 1;
+    }
+
+    public static function isStringAllowedCharsForNameOnly(string $value): bool
+    {
+        return preg_match("/^[a-zA-Z \'-]+$/u", $value) === 1;
     }
 }

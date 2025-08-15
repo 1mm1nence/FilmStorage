@@ -97,25 +97,10 @@ use App\Entity\Film;
     .add-actor-form button:hover {
         background-color: #ddd;
     }
-
-    .delete-link {
-        display: inline-block;
-        margin-top: 20px;
-        padding: 6px 12px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        background-color: #eee;
-        text-decoration: none;
-        color: #cc0000;
-    }
-
-    .delete-link:hover {
-        background-color: #ffcccc;
-    }
 </style>
 
 <div class="edit-container">
-    <h3>Edit page. <a href="/film/detail?id=<?= $film->getId() ?>">Back to detail view</a></h3>
+    <h3>Actors list edit page. <a href="/film/detail?id=<?= $film->getId() ?>">Back to detail view</a></h3>
     <h1><?= htmlspecialchars($film->getName()) ?></h1>
     <p>Year: <?= $film->getYear() ?> | Format: <?= $film->getFormatName() ?></p>
 
@@ -140,7 +125,4 @@ use App\Entity\Film;
         <button type="submit">Add</button>
     </form>
 
-    <p>
-        <a href="/film/delete?id=<?= $film->getId() ?>" class="delete-link" onclick="return confirm('Delete this film?')">Delete Film</a>
-    </p>
 </div>
