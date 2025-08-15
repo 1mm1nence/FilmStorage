@@ -35,15 +35,26 @@
         margin: 5px 0;
     }
 
-    .top-actions {
+    /* Top bar styles */
+    .top-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin: 20px;
+        flex-wrap: wrap; /* Allows wrapping on small screens */
+        background-color: #f0f0f0;
+        padding: 10px 20px;
+        gap: 10px;
     }
 
-    .top-actions a,
-    .top-actions button {
+    .top-bar .left,
+    .top-bar .center,
+    .top-bar .right {
+        display: flex;
+        align-items: center;
+    }
+
+    .top-bar a,
+    .top-bar button {
         display: inline-flex;
         align-items: center;
         padding: 5px 10px;
@@ -52,39 +63,35 @@
         text-decoration: none;
         color: black;
         cursor: pointer;
-        height: 34px; /* same height as inputs for uniformity */
+        height: 34px;
+        white-space: nowrap;
     }
 
-    .top-actions a:hover,
-    .top-actions button:hover,
-    .search-container button:hover {
+    .top-bar a:hover,
+    .top-bar button:hover {
         background-color: #ddd;
     }
 
-    .top-actions form {
+    .top-bar input[type="file"] {
+        border: 1px solid #ccc;
+        padding: 5px;
+        height: 34px;
+        box-sizing: border-box;
+    }
+
+    .top-bar form {
         display: inline-flex;
         align-items: stretch;
         gap: 5px;
     }
 
-    .top-actions input[type="file"] {
-        border: 1px solid #ccc;
-        padding: 5px;
-        height: 34px; /* match button height */
-        box-sizing: border-box;
-    }
-
-    .search-container {
-        text-align: center;
-        margin: 20px 0;
-    }
-
-    .search-container form {
+    /* Search box */
+    .top-bar .center form {
         display: inline-flex;
-        align-items: stretch; /* Make input and button same height */
+        align-items: stretch;
     }
 
-    .search-container input[type="text"] {
+    .top-bar input[type="text"] {
         padding: 5px;
         width: 250px;
         border: 1px solid #ccc;
@@ -92,34 +99,50 @@
         box-sizing: border-box;
     }
 
-    .search-container button {
+    .top-bar .center button {
         padding: 0 10px;
         border: 1px solid #ccc;
         background-color: #eee;
         cursor: pointer;
     }
 
+    /* Responsive */
+    @media (max-width: 768px) {
+        .top-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .top-bar .center {
+            order: -1; /* Move search to top on mobile */
+            justify-content: center;
+        }
+        .top-bar .left,
+        .top-bar .right {
+            justify-content: center;
+        }
+    }
 </style>
 
-<div class="top-actions">
-    <div>
+<div class="top-bar">
+    <div class="left">
         <a href="film/create">Add New Film</a>
     </div>
-    <div>
+
+    <div class="center">
+        <form method="get" action="/search">
+            <input type="text" name="q"
+                   value="<?= isset($_GET['q']) ? htmlspecialchars($_GET['q']) : '' ?>"
+                   placeholder="Search by film or actor">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <div class="right">
         <form action="/import" method="post" enctype="multipart/form-data">
             <input type="file" name="films_file" accept=".txt" required>
             <button type="submit">Import Films</button>
         </form>
     </div>
-</div>
-
-<div class="search-container">
-    <form method="get" action="/search">
-        <input type="text" name="q"
-               value="<?= isset($_GET['q']) ? htmlspecialchars($_GET['q']) : '' ?>"
-               placeholder="Search by film or actor">
-        <button type="submit">Search</button>
-    </form>
 </div>
 
 <div class="film-list">

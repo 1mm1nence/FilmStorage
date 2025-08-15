@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 
+use App\Core\Router;
 use App\Service\AuthService;
 use App\Core\View;
 use PDO;
@@ -16,16 +17,17 @@ class AuthController {
     public function login(): void
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = $_POST['username'] ?? '';
-            $password = $_POST['password'] ?? '';
+            $username = $_POST['username'];
+            $password = $_POST['password'];
+
+            if (empty($username) || empty($password)) {
+                Router::redirectTo('/login', 'Pls, enter both username and password to log in', 'error');
+            }
 
             if ($this->authService->login($username, $password)) {
-                header('Location: /');
-                exit;
+                Router::redirectTo('/', 'Welcome, ' . $username . '!', 'success');
             } else {
-                View::render('auth/login_form.php', [
-                    'error' => 'Invalid credentials',
-                ]);
+                Router::redirectTo('/login', 'Invalid credentials', 'error');
             }
         } else {
             View::render('auth/login_form.php');
@@ -47,8 +49,7 @@ class AuthController {
         session_unset();
         session_destroy();
 
-        header("Location: /login");
-        exit;
+        Router::redirectTo('/login');
     }
 
     public function register(): void {
@@ -57,21 +58,14 @@ class AuthController {
             $password = $_POST['password'] ?? '';
 
             if ($username === '' || $password === '') {
-                View::render('auth/register_form.php', [
-                    'error' => 'Username and password are required.',
-                ]);
-                return;
+                Router::redirectTo('/register', 'Username and password are required', 'error');
             }
 
             $success = $this->authService->register($username, $password);
             if ($success) {
-                View::render('auth/register_success.php', [
-                    'username' => $_SESSION['username'] ?? '',
-                ]);
+                Router::redirectTo('/', 'Welcome, ' . $username .'! You are now registered and logged in', 'success');
             } else {
-                View::render('auth/register_form.php', [
-                    'error' => 'Username already taken.',
-                ]);
+                Router::redirectTo('/register', 'Username already taken. Pls, try other.', 'error');
             }
         } else {
             View::render('auth/register_form.php');

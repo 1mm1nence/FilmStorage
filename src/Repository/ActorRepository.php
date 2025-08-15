@@ -61,22 +61,18 @@ class ActorRepository {
 
     public function addActorToFilm(Actor $actor, Film $film): int
     {
-        try {
-            $actorId = $this->findIdByNameSurname($actor->getName(), $actor->getSurname());
-            if ($actorId === null) {
-                $actorId = $this->create($actor->getName(), $actor->getSurname());
-            }
-
-            $stmt = $this->pdo->prepare("
-                INSERT IGNORE INTO film_actor (film_id, actor_id)
-                VALUES (:film_id, :actor_id)
-            ");
-            $stmt->execute([':film_id' => $film->getId(), ':actor_id' => $actorId]);
-
-            return $actorId;
-        } catch (\Throwable $e) {
-            throw $e;
+        $actorId = $this->findIdByNameSurname($actor->getName(), $actor->getSurname());
+        if ($actorId === null) {
+            $actorId = $this->create($actor->getName(), $actor->getSurname());
         }
+
+        $stmt = $this->pdo->prepare("
+            INSERT IGNORE INTO film_actor (film_id, actor_id)
+            VALUES (:film_id, :actor_id)
+        ");
+        $stmt->execute([':film_id' => $film->getId(), ':actor_id' => $actorId]);
+
+        return $actorId;
     }
 
     public function removeActorFromFilm(int $actorId, int $filmId): void

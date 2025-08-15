@@ -7,13 +7,13 @@ use App\Repository\UserRepository;
 use PDO;
 
 class AuthService {
-    private UserRepository $userRepo;
+    private UserRepository $userRepository;
     private PDO $pdo;
     private ?User $currentUser = null;
 
     public function __construct(PDO $pdo) {
         $this->pdo = $pdo;
-        $this->userRepo = new UserRepository($pdo);
+        $this->userRepository = new UserRepository($pdo);
     }
 
     public function getCurrentUser(): ?User
@@ -26,13 +26,14 @@ class AuthService {
             return null;
         }
 
-        $this->currentUser = $this->userRepo->findById($_SESSION['user_id']);
+        $this->currentUser = $this->userRepository->findById($_SESSION['user_id']);
 
         return $this->currentUser;
     }
 
-    public function login(string $username, string $password): bool {
-        $user = $this->userRepo->findByUsername($username);
+    public function login(string $username, string $password): bool
+    {
+        $user = $this->userRepository->findByUsername($username);
         if (!$user) return false;
 
         if (password_verify($password, $user['password'])) {
@@ -44,13 +45,14 @@ class AuthService {
         return false;
     }
 
-    public function register(string $username, string $password): bool {
-        if ($this->userRepo->findByUsername($username)) {
+    public function register(string $username, string $password): bool
+    {
+        if ($this->userRepository->findByUsername($username)) {
             return false; // Username already taken
         }
 
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $userId = $this->userRepo->create($username, $hashedPassword);
+        $userId = $this->userRepository->create($username, $hashedPassword);
 
         if ($userId) {
             $_SESSION['user_id'] = $userId;
@@ -59,13 +61,5 @@ class AuthService {
         }
 
         return false;
-    }
-
-    public function isLoggedIn(): bool {
-        return isset($_SESSION['user_id']);
-    }
-
-    public function getUsername(): ?string {
-        return $_SESSION['username'] ?? null;
     }
 }

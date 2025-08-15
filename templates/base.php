@@ -20,6 +20,42 @@
         .auth-buttons button {
             margin-left: 10px;
         }
+
+        .flash-message {
+            padding: 12px 20px;
+            margin: 15px 0;
+            border-radius: 6px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Message types */
+        .flash-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .flash-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .flash-message.info {
+            background-color: #cce5ff;
+            color: #004085;
+            border: 1px solid #b8daff;
+        }
+
+        /* optional fade-in */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
     </style>
 </head>
 <body>
@@ -43,6 +79,15 @@
 </header>
 
 <main>
+    <?php if(!empty($_SESSION['flash_message'])):
+        $flash = $_SESSION['flash_message'];
+        ?>
+        <div class="flash-message <?= htmlspecialchars($flash['type']) ?>">
+            <?= htmlspecialchars($flash['text']) ?>
+        </div>
+        <?php unset($_SESSION['flash_message']); ?>
+    <?php endif; ?>
+
     <?php if (!empty($content)): ?>
         <?= $content ?>
     <?php else: ?>

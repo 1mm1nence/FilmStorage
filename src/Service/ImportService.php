@@ -29,6 +29,7 @@ class ImportService
      * @param string $filePath
      * @param User $user
      * @return array Imported Film entities
+     * @throws \Throwable
      */
     public function importFromTxt(string $filePath, User $user): array
     {
@@ -51,7 +52,6 @@ class ImportService
 
         $this->pdo->beginTransaction();
         try {
-
             foreach ($blocks as $block) {
                 $filmData = $this->parseBlock($block);
 
@@ -71,11 +71,9 @@ class ImportService
                     actors: []
                 );
 
-                // Insert film in DB
                 $filmId = $this->filmRepository->create($film);
                 $film->setId($filmId);
 
-                // Process actors
                 if (!empty($filmData['actors'])) {
                     foreach ($filmData['actors'] as $actorName) {
                         $actorParts = array_map('trim', explode(' ', $actorName, 2));
@@ -83,7 +81,6 @@ class ImportService
                         $lastName = $actorParts[1] ?? '';
                         $actor = new Actor(null, $firstName, $lastName);
 
-                        // Insert actor and link to film
                         $actorId = $this->actorRepository->addActorToFilm($actor, $film);
                         $actor->setId($actorId);
 
@@ -133,5 +130,29 @@ class ImportService
         }
 
         return $data;
+    }
+
+    public function isTxtFile(array $file): bool
+    {
+        if (!isset($file['name'], $file['tmp_name'])) {
+            return false;
+        }
+
+        // 1. Check file extension
+        $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+        if (strtolower($ext) !== 'txt') {
+            return false;
+        }
+
+        // 2. Check MIME type
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+
+        if ($mimeType !== 'text/plain') {
+            return false;
+        }
+
+        return true;
     }
 }

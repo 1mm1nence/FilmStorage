@@ -16,12 +16,6 @@ class FilmRepository {
         $this->pdo = $pdo;
     }
 
-    public function findAll(): array
-    {
-        $stmt = $this->pdo->query("SELECT * FROM films");
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
     public function findById(int $id): ?Film
     {
         $sql = "
@@ -45,11 +39,6 @@ class FilmRepository {
         $row = $rows[0];
 
         $filmFormat = FilmFormat::tryFrom($row['format']);
-
-        //todo: make new exception for invalid format.
-        if (!$filmFormat) {
-            throw new \Exception('got invalid format for film format');
-        }
 
         return new Film(
             id: $row['id'],
@@ -99,23 +88,23 @@ class FilmRepository {
     public function findByNameOrActor(string $query, User $user): array
     {
         $sql = "
-        SELECT DISTINCT 
-                f.id,
-                f.name,
-                f.year,
-                f.format
-        FROM films f
-        LEFT JOIN film_actor fa ON f.id = fa.film_id
-        LEFT JOIN actors a ON fa.actor_id = a.id
-        WHERE f.user_id = :user_id
-          AND (
-                f.name LIKE :q
-                OR a.name LIKE :q
-                OR a.surname LIKE :q
-                OR CONCAT(a.name, ' ', a.surname) LIKE :q
-              )
-        ORDER BY f.name
-    ";
+            SELECT DISTINCT 
+                    f.id,
+                    f.name,
+                    f.year,
+                    f.format
+            FROM films f
+            LEFT JOIN film_actor fa ON f.id = fa.film_id
+            LEFT JOIN actors a ON fa.actor_id = a.id
+            WHERE f.user_id = :user_id
+              AND (
+                    f.name LIKE :q
+                    OR a.name LIKE :q
+                    OR a.surname LIKE :q
+                    OR CONCAT(a.name, ' ', a.surname) LIKE :q
+                  )
+            ORDER BY f.name
+        ";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -134,20 +123,6 @@ class FilmRepository {
             );
         }
         return $films;
-    }
-
-    public function getActorsByFilm(int $filmId): array
-    {
-        $stmt = $this->pdo->prepare("SELECT * FROM actors 
-            JOIN film_actor ON actors.id = film_actor.actor_id 
-            WHERE film_actor.film_id = :filmId
-            ");
-        $stmt->execute([
-            ':filmId' => $filmId,
-        ]);
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return $results;
     }
 
     public function create(Film $film): int

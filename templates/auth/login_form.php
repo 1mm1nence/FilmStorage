@@ -1,9 +1,5 @@
 <h1 style="text-align:center; margin-bottom:20px;">Login</h1>
 
-<?php if (!empty($error)): ?>
-    <p style="color:red; text-align:center; margin-bottom:10px;"><?= htmlspecialchars($error) ?></p>
-<?php endif; ?>
-
 <div style="display:flex; justify-content:center;">
     <form method="post" action="/login" style="display:flex; flex-direction:column; gap:10px; width:250px;">
         <label>Username:

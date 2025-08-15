@@ -2,7 +2,8 @@
 
 namespace App\Core;
 
-use App\Service\AuthService;
+use App\Controller\AuthController;
+use App\Controller\FilmController;
 use PDO;
 
 class Router {
@@ -18,30 +19,30 @@ class Router {
     private function registerRoutes(): void {
         $this->routes = [
             'GET' => [
-                '/' => [\App\Controller\FilmController::class, 'index'],
-                '/login' => [\App\Controller\AuthController::class, 'login'],
-                '/register' => [\App\Controller\AuthController::class, 'register'],
+                '/' => [FilmController::class, 'index'],
+                '/login' => [AuthController::class, 'login'],
+                '/register' => [AuthController::class, 'register'],
 
-                '/films' => [\App\Controller\FilmController::class, 'index'],
-                '/film/create' => [\App\Controller\FilmController::class, 'createForm'],
-                '/film/detail' => [\App\Controller\FilmController::class, 'show'],
-                '/film/edit' => [\App\Controller\FilmController::class, 'edit'],
-                '/film/delete' => [\App\Controller\FilmController::class, 'deleteFilm'],
+                '/films' => [FilmController::class, 'index'],
+                '/film/create' => [FilmController::class, 'createForm'],
+                '/film/detail' => [FilmController::class, 'show'],
+                '/film/edit' => [FilmController::class, 'edit'],
+                '/film/delete' => [FilmController::class, 'deleteFilm'],
 
-                '/search' => [\App\Controller\FilmController::class, 'searchFilm'],
-
+                '/search' => [FilmController::class, 'searchFilm'],
             ],
+
             'POST' => [
-                '/login' => [\App\Controller\AuthController::class, 'login'],
-                '/logout' => [\App\Controller\AuthController::class, 'logout'],
-                '/register' => [\App\Controller\AuthController::class, 'register'],
+                '/login' => [AuthController::class, 'login'],
+                '/logout' => [AuthController::class, 'logout'],
+                '/register' => [AuthController::class, 'register'],
 
-                '/film/create' => [\App\Controller\FilmController::class, 'create'],
-                '/film/edit' => [\App\Controller\FilmController::class, 'edit'],
-                '/film/add-actor' => [\App\Controller\FilmController::class, 'addActor'],
-                '/film/remove-actor' => [\App\Controller\FilmController::class, 'removeActor'],
+                '/film/create' => [FilmController::class, 'create'],
+                '/film/edit' => [FilmController::class, 'edit'],
+                '/film/add-actor' => [FilmController::class, 'addActor'],
+                '/film/remove-actor' => [FilmController::class, 'removeActor'],
 
-                '/import' => [\App\Controller\FilmController::class, 'importFilms'],
+                '/import' => [FilmController::class, 'importFilms'],
             ],
         ];
     }
@@ -60,5 +61,18 @@ class Router {
             http_response_code(404);
             echo "404 Not Found";
         }
+    }
+
+    public static function redirectTo(string $url, ?string $message = null, string $type = 'info'): void
+    {
+        if ($message) {
+            $_SESSION['flash_message'] = [
+                'text' => $message,
+                'type' => $type
+            ];
+        }
+
+        header('Location: ' . $url);
+        exit;
     }
 }
