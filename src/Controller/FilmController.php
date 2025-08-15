@@ -10,6 +10,7 @@ use App\Enum\FilmFormat;
 use App\Repository\ActorRepository;
 use App\Repository\FilmRepository;
 use App\Service\ImportService;
+use App\Utils\Validator;
 use PDO;
 
 class FilmController extends AuthenticatedController {
@@ -75,6 +76,30 @@ class FilmController extends AuthenticatedController {
         $filmYear = (int)$_POST['year'];
         $filmFormat = FilmFormat::from($_POST['format']);
 
+        if (!Validator::isStringLengthValid($filmName)) {
+            Router::redirectTo(
+                '/film/create',
+                'The film was not created. The name should contain some letters.',
+                'error'
+            );
+        }
+
+        if (!Validator::isStringAllowedCharsOnly($filmName)) {
+            Router::redirectTo(
+                '/film/create',
+                'The film was not created. The name should contain only letters, spaces numbers.',
+                'error'
+            );
+        }
+
+        if (!Validator::isYearValid($filmYear)) {
+            Router::redirectTo(
+                '/film/create',
+                'The film was not created. The year should be more than 1800 or less than current year + 20.',
+                'error'
+            );
+        }
+
         $film = new Film(
             null,
             $filmName,
@@ -116,15 +141,47 @@ class FilmController extends AuthenticatedController {
         $actorName = trim($_POST['name']);
         $actorSurname = trim($_POST['surname']);
 
+        $film = $this->filmRepository->findById($filmId);
+        if (!$film || !$this->filmRepository->isOwnedBy($filmId, $this->currentUser->getId())) {
+            Router::redirectTo('/', 'Looks like your film gone somewhere ;(', 'error');
+        }
+
+        if (!Validator::isStringLengthValid($actorName) || !Validator::isStringLengthValid($actorSurname)) {
+            Router::redirectTo(
+                '/film/edit?id=' . $filmId,
+                'The actor was not added. The name and surname should contain some letters and should not be longer than 255 characters.',
+                'error'
+            );
+        }
+
+        if (!Validator::isStringAllowedCharsOnly($actorName) || !Validator::isStringAllowedCharsOnly($actorSurname)) {
+            Router::redirectTo(
+                '/film/edit?id=' . $filmId,
+                'The name and surname should not contain any characters other then letters.',
+                'error'
+            );
+        }
+
         $actor = new Actor(
             null,
             $actorName,
             $actorSurname
         );
 
-        $film = $this->filmRepository->findById($filmId);
-        if (!$film || !$this->filmRepository->isOwnedBy($filmId, $this->currentUser->getId())) {
-            Router::redirectTo('/', 'Looks like your film gone somewhere ;(', 'error');
+        $actorId = $this->actorRepository->findIdByNameSurname($actorName, $actorSurname);
+
+        if ($actorId) {
+            $actor->setId($actorId);
+            if ($this->actorRepository->isActorAddedToFilm($actor, $film)) {
+                Router::redirectTo(
+                    '/film/edit?id=' . $filmId,
+                    'Star with the name  ' . $actorName . ' ' . $actorSurname . ' was not added, as they were already listed in the film.',
+                    'info'
+                );
+            }
+        } else {
+            $actorId = $this->actorRepository->create($actorName, $actorSurname);
+            $actor->setId($actorId);
         }
 
         $this->actorRepository->addActorToFilm($actor, $film);

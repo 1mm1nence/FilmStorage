@@ -59,20 +59,13 @@ class ActorRepository {
         return (int)$this->pdo->lastInsertId();
     }
 
-    public function addActorToFilm(Actor $actor, Film $film): int
+    public function addActorToFilm(Actor $actor, Film $film): void
     {
-        $actorId = $this->findIdByNameSurname($actor->getName(), $actor->getSurname());
-        if ($actorId === null) {
-            $actorId = $this->create($actor->getName(), $actor->getSurname());
-        }
-
         $stmt = $this->pdo->prepare("
             INSERT IGNORE INTO film_actor (film_id, actor_id)
             VALUES (:film_id, :actor_id)
         ");
-        $stmt->execute([':film_id' => $film->getId(), ':actor_id' => $actorId]);
-
-        return $actorId;
+        $stmt->execute([':film_id' => $film->getId(), ':actor_id' => $actor->getId()]);
     }
 
     public function removeActorFromFilm(int $actorId, int $filmId): void
@@ -81,6 +74,20 @@ class ActorRepository {
             DELETE FROM film_actor WHERE film_id = :film_id AND actor_id = :actor_id
         ");
         $stmt->execute([':film_id' => $filmId, ':actor_id' => $actorId]);
+    }
+
+    public function isActorAddedToFilm(Actor $actor, Film $film): bool
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT *
+            FROM film_actor
+            WHERE film_id = :film_id AND actor_id = :actor_id
+            LIMIT 1
+        ");
+        $stmt->execute([':film_id' => $film->getId(), ':actor_id' => $actor->getId()]);
+        $rows = $stmt->fetchAll();
+
+        return count($rows) > 0;
     }
 
 }

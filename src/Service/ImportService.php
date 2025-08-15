@@ -81,9 +81,15 @@ class ImportService
                         $lastName = $actorParts[1] ?? '';
                         $actor = new Actor(null, $firstName, $lastName);
 
-                        $actorId = $this->actorRepository->addActorToFilm($actor, $film);
-                        $actor->setId($actorId);
+                        $actorId = $this->actorRepository->findIdByNameSurname($actor->getName(), $actor->getSurname());
+                        if ($actorId) {
+                            $actor->setId($actorId);
+                        } else {
+                            $actorId = $this->actorRepository->create($actor->getName(), $actor->getSurname());
+                            $actor->setId($actorId);
+                        }
 
+                        $this->actorRepository->addActorToFilm($actor, $film);
                         $film->addActor($actor);
                     }
                 }
