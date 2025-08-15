@@ -24,7 +24,7 @@ abstract class AuthenticatedController
     {
         $this->currentUser = $this->authService->getCurrentUser();
         if (!$this->currentUser) {
-            Router::redirectTo('/login', 'Session expired. Please login.');
+            Router::redirectTo('/login');
         }
     }
 }
